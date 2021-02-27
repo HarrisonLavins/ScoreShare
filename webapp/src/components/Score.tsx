@@ -1,15 +1,27 @@
-import React, { Fragment } from 'react';
+import { render } from '@testing-library/react';
+import React, { Fragment, FunctionComponent, useState, useEffect } from 'react';
 import Vex from 'vexflow';
 
 declare interface ScoreProps {
-  name: string;
+  subtitle: string;
   title: string;
+  renderStrings: string;
 }
 
-const Score: React.FunctionComponent<ScoreProps> = ({ name, title }) => {
-  const [scoreRenderStrings, setScoreRenderStrings] = React.useState<string>(
-    ''
+const Score: FunctionComponent<ScoreProps> = ({
+  subtitle,
+  title,
+  renderStrings,
+}) => {
+  const [scoreRenderStrings, setScoreRenderStrings] = useState<string>(
+    renderStrings
   );
+
+  useEffect(() => {
+    // code to run after render() goes here
+    renderScore();
+  }, [scoreRenderStrings]); // <--  If one of the dependencies has changed since the last time,
+  //the effect will run again. (It will also still run after the initial render)
 
   const renderScore = () => {
     // VexFlow was not designed for react, manually clear the old renders before new render.
@@ -26,7 +38,9 @@ const Score: React.FunctionComponent<ScoreProps> = ({ name, title }) => {
         .addStave({
           voices: [
             score.voice(
-              score.notes('C#5/q, c4, C4, G#4', { stem: 'up' }),
+              score.notes(scoreRenderStrings, {
+                stem: 'up',
+              }),
               null
             ),
           ],
@@ -39,13 +53,11 @@ const Score: React.FunctionComponent<ScoreProps> = ({ name, title }) => {
     }
   };
 
-  //setTimeout(renderScore, 1);
-
   return (
     <Fragment>
-      <h1>{title}</h1>
+      <h2>{title}</h2>
       <div id='score'></div>
-      {renderScore()}
+      <h3>{subtitle}</h3>
     </Fragment>
   );
 };

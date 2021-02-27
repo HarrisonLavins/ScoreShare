@@ -10,7 +10,11 @@ function App() {
     <div className='App'>
       <Navbar />
       <div className='App-container'>
-        <Score name='Name here' title='title here' />
+        <Score
+          title='My Score'
+          subtitle='Score 1'
+          renderStrings='C#5/q, C5, C4, G#4[stem="down",id="cursor"]'
+        />
       </div>
     </div>
   );
