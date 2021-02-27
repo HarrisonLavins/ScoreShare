@@ -7,13 +7,10 @@ import Score from './components/Score';
 
 function App() {
   return (
-    <div className="App">
+    <div className='App'>
       <Navbar />
-      <div className="App-container">
-      
-        <div id="score"></div>
-        <Score />
-
+      <div className='App-container'>
+        <Score name='Name here' title='title here' />
       </div>
     </div>
   );
