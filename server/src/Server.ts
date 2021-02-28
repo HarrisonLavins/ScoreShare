@@ -9,6 +9,7 @@ import "express-async-errors";
 
 import BaseRouter from "./routes";
 import logger from "@shared/Logger";
+import initSockets from "./sockets";
 
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
@@ -42,6 +43,12 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     error: err.message,
   });
 });
+
+/************************************************************************************
+ *                          Serve Web Socket Score Editor
+ ***********************************************************************************/
+
+initSockets(app, "/editor");
 
 /************************************************************************************
  *                           Serve front-end API Explorer
