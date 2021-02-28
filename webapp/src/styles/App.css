@@ -21,6 +21,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #eeeeee;
 }
 
 code {
@@ -41,7 +42,7 @@ h1 {
   font-size: 2rem;
   padding-left: 10px;
   padding-right: 10px;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--light-color);
 }
 
@@ -94,9 +95,11 @@ h3 {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  margin-left: 1rem;
+  margin-right: 4rem;
   color: white;
 
-  background-color: #ececec;
+  background-color: #eeeeee;
 }
 
 .App-link {
@@ -118,6 +121,13 @@ h3 {
   fill: red;
 }
 
+.score {
+  border: #787878;
+  border-radius: 20px;
+  order-style: solid;
+  border-width: 5px;
+}
+
 /* Navigation */
 
 /* Navbar */
@@ -129,9 +139,16 @@ h3 {
   z-index: 1;
   width: 100%;
   opacity: 0.9;
-  /* margin-bottom: 1rem; */
+  margin-bottom: 1rem;
 
-  background-color: var(--bg-primary);
+  /* background-color: var(--bg-primary);*/
+  /* background: rgb(0, 212, 255); */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 255, 1) 0%,
+    rgba(27, 27, 231, 1) 51%,
+    rgba(2, 0, 36, 1) 100%
+  );
 }
 
 .navbar ul {
