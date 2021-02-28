@@ -15,7 +15,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import TextField from "@material-ui/core/TextField";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import "../styles/App.css";
 import Score from "./Score";
 
@@ -24,11 +24,11 @@ declare interface EditorProps {
 }
 
 const Editor: React.FunctionComponent<EditorProps> = ({ scoreId }) => {
-  const [scoreTitle, setScoreTitle] = useState("My Score");
-  const [scoreAuthor, setScoreAuthor] = useState("My Name");
-  const [scoreKey, setScoreKey] = useState("G");
-  const [scoreMeter, setScoreMeter] = useState("4/4");
-  const [scoreString, setScoreString] = useState(
+  const [scoreTitle, setScoreTitle] = React.useState("My Score");
+  const [scoreAuthor, setScoreAuthor] = React.useState("My Name");
+  const [scoreKey, setScoreKey] = React.useState("G");
+  const [scoreMeter, setScoreMeter] = React.useState("4/4");
+  const [scoreString, setScoreString] = React.useState(
     `|: Gccc dedB | dedB dedB | \nc2ec B2dB | c2A2 A2BA | c2ec B4:|`
   );
   const [importExportOpen, setImportExportOpen] = React.useState(false);

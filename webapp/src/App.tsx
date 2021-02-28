@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import "./styles/App.css";
 
 const App: React.FunctionComponent = () => {
-  const [scoreId, setScoreId] = useState("");
+  const [scoreId, setScoreId] = React.useState("");
 
   return (
     <Fragment>
