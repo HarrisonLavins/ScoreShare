@@ -16,6 +16,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import TextField from "@material-ui/core/TextField";
 import React, { Fragment } from "react";
+import { UpdateFromServer } from "../../../@types";
+import { openSocket, sendMessage } from "../scripts/socketManager";
 import "../styles/App.css";
 import Score from "./Score";
 
@@ -24,28 +26,39 @@ declare interface EditorProps {
 }
 
 const Editor: React.FunctionComponent<EditorProps> = ({ scoreId }) => {
-  const [scoreTitle, setScoreTitle] = React.useState("My Score");
-  const [scoreAuthor, setScoreAuthor] = React.useState("My Name");
-  const [scoreKey, setScoreKey] = React.useState("G");
-  const [scoreMeter, setScoreMeter] = React.useState("4/4");
-  const [scoreString, setScoreString] = React.useState(
-    `|: Gccc dedB | dedB dedB | \nc2ec B2dB | c2A2 A2BA | c2ec B4:|`
-  );
+  const [scoreTitle, setScoreTitle] = React.useState("");
+  const [scoreAuthor, setScoreAuthor] = React.useState("");
+  const [scoreKey, setScoreKey] = React.useState("");
+  const [scoreMeter, setScoreMeter] = React.useState("");
+  const [scoreString, setScoreString] = React.useState("");
   const [importExportOpen, setImportExportOpen] = React.useState(false);
   const [shareOpen, setShareOpen] = React.useState(false);
 
+  const handleUpdateFromServer = (data: UpdateFromServer) => {
+    fromAbcString(data.score);
+  };
+
+  const updateAbcString = (
+    scoreTitle: string,
+    scoreMeter: string,
+    scoreAuthor: string,
+    scoreKey: string,
+    scoreString: string
+  ) => {
+    const newAbcString = toAbcString(
+      scoreTitle,
+      scoreMeter,
+      scoreAuthor,
+      scoreKey,
+      scoreString
+    );
+    sendMessage(abcString, newAbcString, 0);
+    setAbcString(newAbcString);
+  };
+
+  openSocket("test", handleUpdateFromServer);
+
   const fromAbcString = (abcString: string) => {
-    /* ABC strings take the form: 
-        `X:1\nT:${title}\nM:${meter}\nC:${author}\nK:${scoreKey}\n${abcString}`
-
-        for example: 
-        `X:1\n
-        T:MyScore\n
-        M:4/4\n
-        C:A. Dimmer\n
-        K:G\nc2A2 A2BA`
-    */
-
     const abcArray = abcString.split("\n");
     const scoreArray = [];
     const details = {
@@ -78,57 +91,101 @@ const Editor: React.FunctionComponent<EditorProps> = ({ scoreId }) => {
     setScoreString(scoreArray.join("\n"));
   };
 
-  const toAbcString = () => {
+  const toAbcString = (
+    scoreTitle: string,
+    scoreMeter: string,
+    scoreAuthor: string,
+    scoreKey: string,
+    scoreString: string
+  ) => {
     return `X:1\nT:${scoreTitle}\nM:${scoreMeter}\nC:${scoreAuthor}\nK:${scoreKey}\n${scoreString}`;
   };
 
-  const [abcString, setAbcString] = React.useState(toAbcString());
+  const [abcString, setAbcString] = React.useState(
+    toAbcString(scoreTitle, scoreMeter, scoreAuthor, scoreKey, scoreString)
+  );
 
   const handleABCEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setScoreString(event.target.value);
-    setAbcString(toAbcString());
+    updateAbcString(
+      scoreTitle,
+      scoreMeter,
+      scoreAuthor,
+      scoreKey,
+      event.target.value
+    );
   };
 
   const handleTitleEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setScoreTitle(event.target.value);
-    setAbcString(toAbcString());
+    updateAbcString(
+      event.target.value,
+      scoreMeter,
+      scoreAuthor,
+      scoreKey,
+      scoreString
+    );
   };
 
   const handleAuthorEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setScoreAuthor(event.target.value);
-    setAbcString(toAbcString());
+    updateAbcString(
+      scoreTitle,
+      scoreMeter,
+      event.target.value,
+      scoreKey,
+      scoreString
+    );
   };
 
   const handleKeyEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setScoreKey(event.target.value);
-    setAbcString(toAbcString());
+    updateAbcString(
+      scoreTitle,
+      scoreMeter,
+      scoreAuthor,
+      event.target.value,
+      scoreString
+    );
   };
 
   const handleMeterEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setScoreMeter(event.target.value);
-    setAbcString(toAbcString());
+    updateAbcString(
+      scoreTitle,
+      event.target.value,
+      scoreAuthor,
+      scoreKey,
+      scoreString
+    );
   };
 
   return (
     <Fragment>
       <Container>
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} alignContent="center">
+          <Grid item xs={12}>
             <Paper>
               <Score
                 scoreID="score1"
                 subtitle=""
-                abcString={toAbcString()}
+                abcString={toAbcString(
+                  scoreTitle,
+                  scoreMeter,
+                  scoreAuthor,
+                  scoreKey,
+                  scoreString
+                )}
                 staffClef="treble"
               />
             </Paper>
@@ -238,6 +295,7 @@ const Editor: React.FunctionComponent<EditorProps> = ({ scoreId }) => {
             value={abcString}
             onChange={(event) => {
               setAbcString(event.target.value);
+              sendMessage(abcString, event.target.value, 0);
             }}
           />
         </DialogContent>
@@ -262,7 +320,15 @@ const Editor: React.FunctionComponent<EditorProps> = ({ scoreId }) => {
           <Button
             onClick={() => {
               // setImportExportOpen(false);
-              setAbcString(toAbcString());
+              setAbcString(
+                toAbcString(
+                  scoreTitle,
+                  scoreMeter,
+                  scoreAuthor,
+                  scoreKey,
+                  scoreString
+                )
+              );
             }}
             color="primary"
             autoFocus
