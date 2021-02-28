@@ -17,6 +17,7 @@ const SocketTest: React.FunctionComponent = () => {
     <Container>
       <TextField
         fullWidth
+        label="Test Socket"
         variant="outlined"
         value={testString}
         onChange={(event) => {
@@ -30,10 +31,8 @@ const SocketTest: React.FunctionComponent = () => {
           );
 
           // Developer Debugging
-          if (window.location.href.includes("localhost")) {
-            console.log(testString);
-            console.log(editsMade);
-          }
+          console.log(testString);
+          console.log(editsMade);
 
           setTestString(event.target.value);
           sendMessage(testString, event.target.value, cursor);
