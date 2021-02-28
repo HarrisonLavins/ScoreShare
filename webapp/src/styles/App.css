@@ -16,15 +16,16 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #eeeeee;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -33,16 +34,42 @@ p {
 }
 
 h1 {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 2rem;
   padding-left: 10px;
   padding-right: 10px;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--light-color);
+}
+
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.5rem;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-weight: 400;
+  color: var(--dark-color);
+}
+
+h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1rem;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-weight: 300;
+  color: var(--dark-color);
 }
 
 .App {
@@ -68,9 +95,13 @@ h1 {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  padding-right: 24px;
+
+  margin-left: 2rem;
+  margin-right: 2rem;
   color: white;
 
-  background-color: #ececec;
+  background-color: #eeeeee;
 }
 
 .App-link {
@@ -86,6 +117,31 @@ h1 {
   }
 }
 
+/* Score Renderer */
+
+#vf-cursor {
+  fill: red;
+}
+
+.score svg {
+  /* border: #787878;
+  border-radius: 15px;
+  border-style: solid;
+  border-width: 1px; */
+  margin: auto;
+}
+
+.score div {
+  /* width: 100%; */
+}
+
+.abcjs-highlight {
+  fill: #0a9ecc;
+}
+.abcjs-cursor {
+  stroke: red;
+}
+
 /* Navigation */
 
 /* Navbar */
@@ -97,9 +153,17 @@ h1 {
   z-index: 1;
   width: 100%;
   opacity: 0.9;
-  /* margin-bottom: 1rem; */
+  margin-bottom: 1rem;
 
-  background-color: var(--bg-primary);
+  /* background-color: var(--bg-primary);*/
+  /* background: rgb(0, 212, 255); */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 255, 1) 0%,
+    rgba(27, 27, 231, 1) 51%,
+    rgba(2, 0, 36, 1) 100%
+  );
+  box-shadow: 0px 2px 10px #999;
 }
 
 .navbar ul {

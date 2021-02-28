@@ -1,22 +1,17 @@
-import React from "react";
-import logo from "./assets/logo.svg";
+import React, { Fragment } from "react";
+import Editor from "./components/Editor";
+import Navbar from "./components/Navbar";
 import "./styles/App.css";
 
-import Navbar from "./components/Navbar";
-import SocketTest from "./components/SocketTest";
+const App: React.FunctionComponent = () => {
+  const [scoreId, setScoreId] = React.useState("");
 
-function App() {
   return (
-    <div className="App">
+    <Fragment>
       <Navbar />
-      <div className="App-container">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello world!</p>
-
-        <SocketTest />
-      </div>
-    </div>
+      {/* scoreId && */ <Editor scoreId={scoreId} />}
+    </Fragment>
   );
-}
+};
 
 export default App;
