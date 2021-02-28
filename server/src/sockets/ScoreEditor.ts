@@ -1,6 +1,7 @@
 import logger from "@shared/Logger";
 import { Request } from "express";
 import { nanoid } from "nanoid";
+import { determineEdits } from "src/scripts/calculateEditDistance";
 import * as ws from "ws";
 import {
   ClientCursorPositions,
@@ -74,9 +75,7 @@ const receiveUpdate = (
 
     // Send the score data to all other users
     for (const connection of clientList) {
-      if (connection !== myConnection) {
-        sendUpdate(connection, scoreId);
-      }
+      sendUpdate(connection, scoreId);
     }
   }
 
@@ -114,13 +113,133 @@ const mergeNewEdit = (edit: EditToServerUpdate, scoreId: string) => {
       // Edits in order, no need for recursion, can just apply
       if (currentEdit.original === pastMergedScore) {
         scoreData.mergedScore[i] = currentEdit.updated;
-        const currentCursors: ClientCursorPositions = {};
-        for (const connection in pastCursors) {
-          currentCursors[connection] = pastCursors[connection];
-        }
+        const currentCursors = copyOtherCursors(
+          pastCursors,
+          currentEdit.connectionId
+        );
         currentCursors[currentEdit.connectionId] = currentEdit.cursor;
       } else {
-        logger.err("Not implemented!");
+        // TODO: FIX THIS LOGIC, there are still some failing edge cases
+        // Find the current edit difference and patch any hole (ex. "I I", "D D", etc.)
+        const currentEditDiffArray = determineEdits(
+          currentEdit.original,
+          currentEdit.updated,
+          currentEdit.cursor
+        ).split("");
+
+        const lowerEditBound = Math.min(
+          currentEditDiffArray.indexOf("I") > 0
+            ? currentEditDiffArray.indexOf("I")
+            : Infinity,
+          currentEditDiffArray.indexOf("D") > 0
+            ? currentEditDiffArray.indexOf("D")
+            : Infinity,
+          currentEditDiffArray.indexOf("R") > 0
+            ? currentEditDiffArray.indexOf("R")
+            : Infinity
+        );
+        const upperEditBound = Math.max(
+          currentEditDiffArray.lastIndexOf("I"),
+          currentEditDiffArray.lastIndexOf("D"),
+          currentEditDiffArray.lastIndexOf("R")
+        );
+
+        for (let i = lowerEditBound; i < upperEditBound; i++) {
+          if (currentEditDiffArray[i] === " ") {
+            currentEditDiffArray[i] = "R";
+          }
+        }
+
+        const currentEditDiff = currentEditDiffArray.join();
+
+        logger.info(currentEditDiff);
+
+        // Find the section to delete and the section to insert
+        const keyPoints: { [key: string]: number } = {
+          startDeleteIndex: Math.min(
+            currentEditDiffArray.indexOf("D") > 0
+              ? currentEditDiffArray.indexOf("D")
+              : Infinity,
+            currentEditDiffArray.indexOf("R") > 0
+              ? currentEditDiffArray.indexOf("R")
+              : Infinity
+          ),
+          startInsertIndex: Math.min(
+            currentEditDiffArray.indexOf("I") > 0
+              ? currentEditDiffArray.indexOf("I")
+              : Infinity,
+            currentEditDiffArray.indexOf("R") > 0
+              ? currentEditDiffArray.indexOf("R")
+              : Infinity
+          ),
+          stopDeleteIndex: Math.max(
+            currentEditDiffArray.lastIndexOf("D"),
+            currentEditDiffArray.lastIndexOf("R")
+          ),
+          stopInsertIndex: Math.max(
+            currentEditDiffArray.lastIndexOf("I"),
+            currentEditDiffArray.lastIndexOf("R")
+          ),
+          cursor: currentEdit.cursor,
+        };
+
+        // Get insertion string
+        const insertionString =
+          keyPoints.startInsertIndex <= keyPoints.stopInsertIndex
+            ? currentEdit.updated.substring(
+                keyPoints.startInsertIndex,
+                keyPoints.stopInsertIndex + 1
+              )
+            : "";
+
+        // Find past edit difference; note cursor position does not matter --> check this!
+        const pastEditDiff = determineEdits(
+          currentEdit.original,
+          pastMergedScore,
+          100
+        ).split("");
+
+        logger.info("Past Diff: " + pastEditDiff.join());
+
+        // Adjust indecies based on changes that occurred before
+        for (let i = 0; i < pastEditDiff.length; i++) {
+          for (const key in keyPoints) {
+            if (pastEditDiff[i] === "I" && keyPoints[key] < i) {
+              keyPoints[key]++;
+            } else if (pastEditDiff[i] === "D" && keyPoints[key] < i) {
+              keyPoints[key]--;
+            }
+          }
+        }
+
+        // Get delete length
+        const deleteLength =
+          keyPoints.startDeleteIndex <= keyPoints.stopDeleteIndex
+            ? keyPoints.stopDeleteIndex - keyPoints.startDeleteIndex + 1
+            : 0;
+
+        // Get edit start point
+        const editStartPoint = Math.min(
+          keyPoints.startDeleteIndex > 0
+            ? keyPoints.startDeleteIndex
+            : Infinity,
+          keyPoints.startInsertIndex > 0 ? keyPoints.startInsertIndex : Infinity
+        );
+
+        // Make new edits
+        logger.info(pastMergedScore.substring(0, editStartPoint));
+        logger.info(insertionString);
+        logger.info(pastMergedScore.substr(editStartPoint + deleteLength));
+
+        scoreData.mergedScore[i] =
+          pastMergedScore.substring(0, editStartPoint) +
+          insertionString +
+          pastMergedScore.substr(editStartPoint + deleteLength);
+        scoreData.cursors[i] = copyOtherCursors(
+          pastCursors,
+          currentEdit.connectionId
+        );
+        scoreData.cursors[i][currentEdit.connectionId] = keyPoints.cursor;
       }
     }
   }
@@ -142,22 +261,29 @@ const sendUpdate = (
       scoreData.cursors.length > 0
         ? scoreData.cursors[scoreData.cursors.length - 1]
         : undefined;
-    const otherCursors: ClientCursorPositions = {};
-    if (cursors) {
-      for (const connectionId in cursors) {
-        if (connectionId !== myConnection.connectionId) {
-          otherCursors[connectionId] = cursors[connectionId];
-        }
-      }
-    }
     const updateData: UpdateFromServer = {
       myConnectionId: myConnection.connectionId,
       score: mergedScore,
       myCursor: cursors ? cursors[myConnection.connectionId] : 0,
-      otherCursors,
+      otherCursors: copyOtherCursors(cursors, myConnection.connectionId),
     };
     myConnection.ws.send(JSON.stringify(updateData));
   }
+};
+
+const copyOtherCursors = (
+  cursors: ClientCursorPositions | undefined,
+  myConnectionId: string
+) => {
+  const otherCursors: ClientCursorPositions = {};
+  if (cursors) {
+    for (const connectionId in cursors) {
+      if (connectionId !== myConnectionId) {
+        otherCursors[connectionId] = cursors[connectionId];
+      }
+    }
+  }
+  return otherCursors;
 };
 
 const closeConnection = (
@@ -185,11 +311,20 @@ const closeConnection = (
 
 const debugLogging = (eventDescription: string, scoreId: string) => {
   if ((process.env.NODE_ENV = "development")) {
-    logger.info(`${eventDescription} for score ${scoreId}`);
+    logger.info(
+      `${eventDescription} for score ${scoreId};\n Current state for score ${scoreId}:\n\tMessage: ${(() => {
+        const scoreData = data[scoreId];
 
-    logger.info(`Current state for score ${scoreId}`);
-    logger.info(data[scoreId]);
-    logger.info(clients[scoreId]);
+        // Check the connection has not already been closed
+        if (scoreData) {
+          return scoreData.mergedScore.length > 0
+            ? scoreData.mergedScore[scoreData.mergedScore.length - 1]
+            : scoreData.baseScore;
+        } else {
+          return undefined;
+        }
+      })()}\n\tOpen Connections: ${clients[scoreId]?.length}`
+    );
   }
 };
 export default scoreEditorFactory;
