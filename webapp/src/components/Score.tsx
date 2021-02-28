@@ -1,16 +1,12 @@
-import { render } from '@testing-library/react';
-import React, { Fragment, FunctionComponent, useState, useEffect } from 'react';
+import { render } from "@testing-library/react";
+import React, { Fragment, FunctionComponent, useState, useEffect } from "react";
 // @ts-ignore
-import Abcjs from 'react-abcjs';
+import Abcjs from "react-abcjs";
 // import abcjs from "abcjs";
 
 declare interface ScoreProps {
   scoreID: string;
   subtitle: string;
-  title: string;
-  author: string;
-  scoreKey: string;
-  meter: string;
   abcString: string;
   staffClef: string;
 }
@@ -18,11 +14,7 @@ declare interface ScoreProps {
 const Score: FunctionComponent<ScoreProps> = ({
   scoreID,
   subtitle,
-  title,
-  scoreKey,
-  meter,
   abcString,
-  author,
   staffClef,
 }) => {
   useEffect(() => {
@@ -41,16 +33,14 @@ const Score: FunctionComponent<ScoreProps> = ({
   };
 
   return (
-    <div className='score'>
+    <div className="score">
       {/* <h2>{title}</h2> */}
-      <div id={scoreID} style={{ maxWidth: '90vw' }}>
-        <Abcjs
-          abcNotation={`X:1\nT:${title}\nM:${meter}\nC:${author}\nK:${scoreKey}\n${abcString}`}
-          parserParams={{}}
-          engraverParams={{}}
-          renderParams={{ viewportHorizontal: true }}
-        />
-      </div>
+      <Abcjs
+        abcNotation={abcString}
+        parserParams={{}}
+        engraverParams={{}}
+        renderParams={{ viewportHorizontal: false }}
+      />
       <h3>{subtitle}</h3>
     </div>
   );
