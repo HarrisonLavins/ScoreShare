@@ -2,11 +2,16 @@ import { Container, TextField } from "@material-ui/core";
 import React from "react";
 import { determineEdits } from "../scripts/calculateEditDistance";
 import { openSocket, sendMessage } from "../scripts/socketManager";
+import { UpdateFromServer } from "../../../@types";
 
 const SocketTest: React.FunctionComponent = () => {
   const [testString, setTestString] = React.useState<string>("");
 
-  openSocket("test", setTestString);
+  const handleUpdateFromServer = (data: UpdateFromServer) => {
+    setTestString(data.score);
+  };
+
+  openSocket("test", handleUpdateFromServer);
 
   return (
     <Container>
@@ -31,7 +36,7 @@ const SocketTest: React.FunctionComponent = () => {
           }
 
           setTestString(event.target.value);
-          sendMessage(event.target.value);
+          sendMessage(testString, event.target.value, cursor);
         }}
       />
     </Container>

@@ -1,5 +1,5 @@
-// NOTE: THIS IS ONLY FOR DEBUG. ALL ACUTAL PRODUCTION CODE FOR THIS IS IN THE SERVER!
-// See /server/src/scripts/calculateEditDistance.ts for the production code.
+// NOTE: This is not the code used for testing this functionality; that all happens on the webapp.
+// See /webapp/src/scripts/calculateEditDistance.ts for the development test code.
 
 const calculateEditDistance = (
   original: string,
