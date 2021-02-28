@@ -95,8 +95,10 @@ h3 {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  margin-left: 1rem;
-  margin-right: 4rem;
+  padding-right: 24px;
+
+  margin-left: 2rem;
+  margin-right: 2rem;
   color: white;
 
   background-color: #eeeeee;
@@ -122,10 +124,17 @@ h3 {
 }
 
 .score {
-  border: #787878;
+  /* border: #787878;
   border-radius: 20px;
-  order-style: solid;
-  border-width: 5px;
+  border-style: solid;
+  border-width: 5px; */
+}
+
+.abcjs-highlight {
+  fill: #0a9ecc;
+}
+.abcjs-cursor {
+  stroke: red;
 }
 
 /* Navigation */
