@@ -75,7 +75,9 @@ const receiveUpdate = (
 
     // Send the score data to all other users
     for (const connection of clientList) {
-      sendUpdate(connection, scoreId);
+      if (connection !== myConnection) {
+        sendUpdate(connection, scoreId);
+      }
     }
   }
 
@@ -111,14 +113,14 @@ const mergeNewEdit = (edit: EditToServerUpdate, scoreId: string) => {
         i > 0 ? scoreData.mergedScore[i - 1] : scoreData.baseScore;
 
       // Edits in order, no need for recursion, can just apply
-      if (currentEdit.original === pastMergedScore) {
-        scoreData.mergedScore[i] = currentEdit.updated;
-        const currentCursors = copyOtherCursors(
-          pastCursors,
-          currentEdit.connectionId
-        );
-        currentCursors[currentEdit.connectionId] = currentEdit.cursor;
-      } else {
+      // if (currentEdit.original === pastMergedScore) {
+      scoreData.mergedScore[i] = currentEdit.updated;
+      const currentCursors = copyOtherCursors(
+        pastCursors,
+        currentEdit.connectionId
+      );
+      currentCursors[currentEdit.connectionId] = currentEdit.cursor;
+      /* } else {
         // TODO: FIX THIS LOGIC, there are still some failing edge cases
         // Find the current edit difference and patch any hole (ex. "I I", "D D", etc.)
         const currentEditDiffArray = determineEdits(
@@ -240,7 +242,7 @@ const mergeNewEdit = (edit: EditToServerUpdate, scoreId: string) => {
           currentEdit.connectionId
         );
         scoreData.cursors[i][currentEdit.connectionId] = keyPoints.cursor;
-      }
+      } */
     }
   }
 };
