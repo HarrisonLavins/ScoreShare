@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import React, { Fragment, FunctionComponent, useState, useEffect } from 'react';
 // @ts-ignore
 import Abcjs from 'react-abcjs';
+// import abcjs from "abcjs";
 
 declare interface ScoreProps {
   scoreID: string;
@@ -33,7 +34,7 @@ const Score: FunctionComponent<ScoreProps> = ({
   const renderScore = () => {
     const scoreElement = document.getElementById(scoreID);
     if (scoreElement) {
-      // scoreElement.innerHTML = '';
+      // Do nothing
     } else {
       console.log('No "score" container found!');
     }

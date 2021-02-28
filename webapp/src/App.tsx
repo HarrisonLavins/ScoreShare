@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import logo from './assets/logo.svg';
 import './styles/App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMusic } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +12,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,10 +45,24 @@ function App() {
   const [scoreAuthor, setScoreAuthor] = useState('A. Dimmer');
   const [scoreKey, setScoreKey] = useState('G');
   const [scoreMeter, setScoreMeter] = useState('4/4');
-
   const [renderString, setRenderString] = useState(
-    `|: Gccc dedB | dedB dedB | c2ec B2dB | c2A2 A2BA:|`
+    `|: Gccc dedB | dedB dedB | \nc2ec B2dB | c2A2 A2BA | !mark!c2ec B4:|`
   );
+
+  const parseABCString = (abcString: string) => {
+    /* ABC strings take the form: 
+        `X:1\nT:${title}\nM:${meter}\nC:${author}\nK:${scoreKey}\n${abcString}`
+
+        for example: 
+        `X:1\n
+        T:MyScore\n
+        M:4/4\n
+        C:A. Dimmer\n
+        K:G\nc2A2 A2BA`
+    */
+
+    return '';
+  };
 
   const handleABCEditorChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -176,6 +188,7 @@ function App() {
                 <OutlinedInput
                   id='score-editor'
                   value={renderString}
+                  multiline
                   onChange={handleABCEditorChange}
                   startAdornment={
                     <InputAdornment position='start'>
