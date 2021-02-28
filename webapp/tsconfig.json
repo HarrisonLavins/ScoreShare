@@ -1,13 +1,9 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "rootDir": "src",    
+    "rootDir": "src",
     "outDir": "build",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,7 +18,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src", "../@types"]
 }

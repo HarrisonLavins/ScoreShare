@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import Editor from "./components/Editor";
 import Navbar from "./components/Navbar";
 import "./styles/App.css";
